@@ -1,0 +1,67 @@
+use prouni
+
+// Recupere um apanhado contendo todos os valores distintos da chave NOME_TURNO_CURSO_BOLSA;
+db.prouni.distinct("NOME_TURNO_CURSO_BOLSA");
+
+// Recupere a quantidade total do apanhado contendo todos os valores distintos da chave NOME_TURNO_CURSO_BOLSA;
+db.prouni.distinct("NOME_TURNO_CURSO_BOLSA").length;
+
+// Recupere a quantidade total do apanhado contendo todos os valores distintos da chave “NOME_CURSO_BOLSA”;
+db.prouni.distinct("NOME_CURSO_BOLSA").length;
+
+// 4. Recupere um apanhado de documentos pela chave instituições de ensino ("NOME_IES_BOLSA") através das seguintes regras (respeite o case-sensitive dos tópicos abaixo):
+//a. Documentos que contenha em qualquer parte do campo o valor “CEN”;
+db.prouni.find({NOME_IES_BOLSA: /CEN/}).pretty();
+
+//b. Documentos que contenha em qualquer parte do campo o valor “UNI”;
+db.prouni.find({NOME_IES_BOLSA: /UNI/}).pretty();
+
+//c. Documentos que contenha em qualquer parte do campo o valor “uni”;
+db.prouni.find({NOME_IES_BOLSA: /uni/}).pretty();
+
+//d. Documentos que contenha em qualquer parte do campo o valor “uti”;
+db.prouni.find({NOME_IES_BOLSA: /uti/}).pretty();
+
+//e. Documentos que comece com o valor “UNI”;
+db.prouni.find({NOME_IES_BOLSA: /^UNI/}).pretty();
+
+//f. Documentos que comece com o valor “INS”;
+db.prouni.find({NOME_IES_BOLSA: /^INS/}).pretty();
+
+//g. Documentos que comece com o valor “uNI”;
+db.prouni.find({NOME_IES_BOLSA: /^uNI/}).pretty();
+
+//h. Documentos que termine com o valor “OES”;
+db.prouni.find({NOME_IES_BOLSA: /OES$/}).pretty();
+
+//i. Documentos que contenha em qualquer parte do campo o valor “CEN” e “uti”;
+db.prouni.find({NOME_IES_BOLSA: /CEN/ && /uti/}).pretty();
+
+//j. Documentos que contenha em qualquer parte do campo o valor “tri” e “TOd”;
+db.prouni.find({NOME_IES_BOLSA: /tri/ && /TOd/}).pretty();
+
+//5. Recupere um apanhado de documentos em ordem crescente através da chave “ANO_CONCESSAO_BOLSA”;
+db.prouni.find().sort({ANO_CONCESSAO_BOLSA: 1}).pretty();
+
+//6. Recupere um apanhado de documentos em ordem decrescente através da chave “idade”;
+db.prouni.find().sort({idade: -1}).pretty();
+
+//7. Recupere os estudantes do turno “Vespertino” (NOME_TURNO_CURSO_BOLSA) que estavam participando do programa no ano de “2009” (ANO_CONCESSAO_BOLSA);
+db.prouni.find({NOME_TURNO_CURSO_BOLSA: "Vespertino", ANO_CONCESSAO_BOLSA: 2009}).pretty();
+
+//8. Recupere os estudantes do turno “Vespertino” ( NOME_TURNO_CURSO_BOLSA ) que estavam participando do programa no ano de “2009” ( ANO_CONCESSAO_BOLSA ), porém, limite a quantidade de documentos de resposta em 5;
+db.prouni.find({NOME_TURNO_CURSO_BOLSA: "Vespertino", ANO_CONCESSAO_BOLSA: 2009}).limit(5).pretty();
+
+//9. Considere os IDs abaixo:
+//a. ID_1: 6504c39e22a4da449a1a5bf9
+//b. ID_2: 6504c39822a4da449a15fed3
+//c. ID_3: 6504c3bb22a4da449a333a20
+//Recupere os documentos através dos IDs e coloque em ordem crescente;
+db.prouni.find({_id: {$in: ["6504c39e22a4da449a1a5bf9", "6504c39822a4da449a15fed3", "6504c3bb22a4da449a333a20"]}}).sort({_id: 1}).pretty();
+
+//10. Recupere todos os documentos em que as instituições de ensino ( NOME_IES_BOLSA ) comecem com “uni”, porém apresente como resultado, apenas as chaves e valores “ ANO_CONCESSAO_BOLSA ”, “ TIPO_BOLSA ” e “ MUNICIPIO_BENEFICIARIO_BOLSA ”;
+db.prouni.find({NOME_IES_BOLSA: /^uni/}, {ANO_CONCESSAO_BOLSA: 1, TIPO_BOLSA: 1, MUNICIPIO_BENEFICIARIO_BOLSA: 1}).pretty();
+
+//11. Verifique se há algum documento sem a chave e valores de “CODIGO_EMEC_IES_BOLSA”;
+db.prouni.find({CODIGO_EMEC_IES_BOLSA: {$exists: false}}).pretty();
+
