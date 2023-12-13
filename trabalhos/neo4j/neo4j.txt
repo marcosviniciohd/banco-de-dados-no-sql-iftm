@@ -1,0 +1,96 @@
+// Criação dos nós com atributos
+CREATE (alice:User {userID: 1, name: 'Alice', email: 'alice@email.com', dateOfBirth: date('1990-01-01')})
+CREATE (bob:User {userID: 2, name: 'Bob', email: 'bob@email.com', dateOfBirth: date('1992-05-12')})
+CREATE (saoPaulo:City {cityID: 1, name: 'São Paulo', population: 12000000})
+CREATE (rioDeJaneiro:City {cityID: 2, name: 'Rio de Janeiro', population: 6500000})
+CREATE (post1:Post {postID: 1, content: 'Aqui vai um conteúdo de exemplo para a primeira publicação.', timestamp: datetime()})
+CREATE (post2:Post {postID: 2, content: 'Isso é um exemplo de conteúdo para a segunda publicação.', timestamp: datetime()})
+CREATE (tech:Interest {interestID: 1, name: 'Tecnologia'})
+CREATE (travel:Interest {interestID: 2, name: 'Viagem'})
+
+// Passo 2: Criação dos relacionamentos usando os IDs dos nós
+
+// Amizades
+MATCH (alice:User {userID: 1}), (bob:User {userID: 2})
+CREATE (alice)-[:FRIENDSHIP {since: '2015-06-01'}]->(bob)
+
+// Moradias
+MATCH (alice:User {userID: 1}), (sp:City {cityID: 1})
+CREATE (alice)-[:LIVES_IN]->(sp)
+
+MATCH (bob:User {userID: 2}), (rj:City {cityID: 2})
+CREATE (bob)-[:LIVES_IN]->(rj)
+
+// Curtidas em publicações
+MATCH (alice:User {userID: 1}), (post2:Post {postID: 2})
+CREATE (alice)-[:LIKED {onDate: '2023-11-17T10:00:00Z'}]->(post2)
+
+MATCH (bob:User {userID: 2}), (post1:Post {postID: 1})
+CREATE (bob)-[:LIKED {onDate: '2023-11-18T14:30:00Z'}]->(post1)
+
+// Publicações feitas por usuários
+MATCH (alice:User {userID: 1}), (post1:Post {postID: 1})
+CREATE (alice)-[:WROTE]->(post1)
+
+MATCH (bob:User {userID: 2}), (post2:Post {postID: 2})
+CREATE (bob)-[:WROTE]->(post2)
+
+// Marcações de interesse
+MATCH (alice:User {userID: 1}), (tech:Interest {interestID: 1})
+CREATE (alice)-[:MARKED]->(tech)
+
+MATCH (bob:User {userID: 2}), (travel:Interest {interestID: 2})
+CREATE (bob)-[:MARKED]->(travel)
+
+// Visitas a cidades
+MATCH (alice:User {userID: 1}), (rj:City {cityID: 2})
+CREATE (alice)-[:VISITED {visitDate: '2022-01-01'}]->(rj)
+
+MATCH (bob:User {userID: 2}), (sp:City {cityID: 1})
+CREATE (bob)-[:VISITED {visitDate: '2022-06-15'}]->(sp)
+
+
+--- PESQUISAS ---
+
+Encontrar todos os amigos de Alice:
+
+MATCH (alice:User {name: 'Alice'})-[:FRIENDSHIP]->(friends)
+RETURN friends.name
+
+Buscar todas as publicações que Alice curtiu:
+
+MATCH (alice:User {name: 'Alice'})-[:LIKED]->(posts)
+RETURN posts
+
+Listar todos os usuarios que mora em SP?
+
+MATCH (users:User)-[:LIVES_IN]->(city:City {name: 'São Paulo'})
+RETURN users.name
+
+Todas publicações feitas por bob:
+MATCH (bob:User {name: 'Bob'})-[:WROTE]->(posts)
+RETURN posts.content
+
+Cidades que alice visitou
+MATCH (alice:User {name: 'Alice'})-[:VISITED]->(cities)
+RETURN cities.name
+
+usuarios com interesse em tecnologia 
+MATCH (users:User)-[:MARKED]->(interest:Interest {name: 'Tecnologia'})
+RETURN users.name
+
+Quantidade de publicações de cada user curtiu:
+MATCH (users:User)-[:LIKED]->(posts)
+RETURN users.name, count(posts) as LikesCount
+
+Usuarios que visitaram o rio em janeiro:
+MATCH (users:User)-[:VISITED]->(city:City {name: 'Rio de Janeiro'})
+RETURN users.name
+
+Lista dos interesses de bob
+MATCH (user:User)-[friendship:FRIENDSHIP]->(friend)
+RETURN user.name, friend.name, friendship.since
+
+
+MATCH (bob:User {name: 'Bob'})-[:MARKED]->(interests)
+RETURN interests.name
